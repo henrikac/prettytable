@@ -134,4 +134,28 @@ describe Table do
       end
     end
   end
+
+  describe "#to_s" do
+    it "should print table" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "George", "72"],
+        ["2", "Wanda", "1"],
+        ["3", "Clark Kent", "31"]
+      ]
+
+      expected = "
++----+------------+-----+
+| id | name       | age |
++----+------------+-----+
+|  1 | George     |  72 |
+|  2 | Wanda      |   1 |
+|  3 | Clark Kent |  31 |
++----+------------+-----+
+"
+      actual = table.to_s
+
+      actual.should eq expected
+    end
+  end
 end
