@@ -1,6 +1,6 @@
 # prettytable
 
-TODO: Write a description here
+Crystal library that makes it easy to build simple text tables.
 
 ## Installation
 
@@ -9,26 +9,51 @@ TODO: Write a description here
    ```yaml
    dependencies:
      prettytable:
-       github: your-github-user/prettytable
+       github: henrikac/prettytable
    ```
 
 2. Run `shards install`
 
 ## Usage
 
+#### Basic example
+
 ```crystal
 require "prettytable"
+
+table = PrettyTable::Table.new(["id", "name", "age"])
+# headers can be set as above or later with #set_headers(headers : Array(String))
+table << [
+  ["1", "Melody Connolly", "42"],
+  ["2", "Leslie Hutchinson", "1"],
+  ["3", "Codey French", "58"]
+]
+
+puts table
+```
+will output
 ```
 
-TODO: Write usage instructions here
++----+-------------------+-----+
+| id | name              | age |
++----+-------------------+-----+
+|  1 | Melody Connolly   |  42 |
+|  2 | Leslie Hutchinson |   1 |
+|  3 | Codey French      |  58 |
++----+-------------------+-----+
 
-## Development
+```
 
-TODO: Write development instructions here
+#### Ways to add rows to table
+
++ `PrettyTable::Table#add_row(row : Array(String))`
++ `PrettyTable::Table#add_rows(rows : Array(Array(String)))`
++ `PrettyTable::Table#<<(row : Array(String))`
++ `PrettyTable::Table#<<(rows : Array(Array(String)))`
 
 ## Contributing
 
-1. Fork it (<https://github.com/your-github-user/prettytable/fork>)
+1. Fork it (<https://github.com/henrikac/prettytable/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
@@ -36,4 +61,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [Henrik Christensen](https://github.com/your-github-user) - creator and maintainer
+- [Henrik Christensen](https://github.com/henrikac) - creator and maintainer
