@@ -158,4 +158,92 @@ describe Table do
       actual.should eq expected
     end
   end
+
+  describe "#to_csv" do
+    after_each do
+      filename = "./spec/data/table_data.csv"
+      File.delete(filename) if File.exists?(filename)
+    end
+
+    it "should save table data to a .csv file" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "George", "72"],
+        ["2", "Wanda", "1"],
+        ["3", "Clark Kent", "31"]
+      ]
+
+      table.to_csv("./spec/data/table_data.csv")
+      File.exists?("./spec/data/table_data.csv").should be_true
+
+      table_from_csv = PrettyTable::Table.from_csv("./spec/data/table_data.csv")
+
+      table_from_csv.headers.size.should eq table.headers.size
+      table_from_csv.headers.each_with_index do |header, i|
+        header.should eq table.headers[i]
+      end
+
+      table_from_csv.rows.size.should eq table.rows.size
+      table_from_csv.rows.each_with_index do |row, i|
+        row.each_with_index do |item, j|
+          item.should eq table.rows[i][j]
+        end
+      end
+    end
+  end
+
+  describe ".from_csv" do
+    it "should read a csv file and return a table" do
+      table = PrettyTable::Table.from_csv("./spec/data/test.csv")
+
+      table.should_not be_nil
+    end
+
+    it "should return a table with headers set correctly" do
+      table = PrettyTable::Table.from_csv("./spec/data/test.csv")
+
+      expected_headers = ["id", "name", "age"]
+      actual_headers = table.headers
+
+      actual_headers.size.should eq expected_headers.size
+      actual_headers.each_with_index do |item, i|
+        item.should eq expected_headers[i]
+      end
+    end
+
+    it "should return a table with rows correctly" do
+      table = PrettyTable::Table.from_csv("./spec/data/test.csv")
+
+      expected_rows = [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+      actual_rows = table.rows
+
+      actual_rows.size.should eq expected_rows.size
+      actual_rows.each_with_index do |row, i|
+        row.each_with_index do |item, j|
+          item.should eq expected_rows[i][j]
+        end
+      end
+    end
+
+    it "should output table created from csv correctly" do
+      table = PrettyTable::Table.from_csv("./spec/data/test.csv")
+
+      expected = "
++----+-----------------+-----+
+| id | name            | age |
++----+-----------------+-----+
+|  1 | John Doe        |  31 |
+|  2 | Kelly Strong    |  20 |
+|  3 | James Hightower |  58 |
++----+-----------------+-----+
+"
+      actual = table.to_s
+
+      actual.should eq expected
+    end
+  end
 end

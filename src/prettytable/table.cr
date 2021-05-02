@@ -1,3 +1,5 @@
+require "csv"
+
 class PrettyTable::Table
   # Returns the table headers.
   getter headers = [] of String
@@ -52,6 +54,7 @@ class PrettyTable::Table
     self.add_rows(rows)
   end
 
+  # Writes the table to *io*.
   def to_s(io : IO) : Nil
     return if @headers.empty?
 
@@ -61,6 +64,28 @@ class PrettyTable::Table
     output += build_rows(column_sizes)
 
     io.puts output
+  end
+
+  # Saves the table to a .csv file.
+  def to_csv(filename : String)
+    data = CSV.build do |csv|
+      csv.row @headers
+      @rows.each { |row| csv.row row }
+    end
+
+    File.write(filename, data)
+  end
+
+  # Returns a table created based on data from a .csv file.
+  def self.from_csv(csv_file : String) : PrettyTable::Table
+    file_data = File.read csv_file
+    csv = CSV.new(file_data, headers: true)
+
+    table = PrettyTable::Table.new(csv.headers)
+
+    csv.each { |c| table << c.row.to_a }
+
+    return table
   end
 
   private def table_line(column_sizes : Array(Int32)) : String

@@ -44,6 +44,25 @@ will output
 
 ```
 
+#### To/From CSV
+
+```crystal
+require "prettytable"
+
+table = PrettyTable::Table.new(["id", "name", "age"])
+table << [
+  ["1", "Melody Connolly", "42"],
+  ["2", "Leslie Hutchinson", "1"],
+  ["3", "Codey French", "58"]
+]
+
+table.to_csv("./table.csv") # => saves the table to table.csv
+
+# Load table from .csv
+loaded_table = PrettyTable::Table.from_csv("./table.csv")
+loaded_table.headers # => ["id", "name", "age"]
+```
+
 #### Ways to add rows to table
 
 + `PrettyTable::Table#add_row(row : Array(String))`
