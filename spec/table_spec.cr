@@ -246,4 +246,83 @@ describe Table do
       actual.should eq expected
     end
   end
+
+  describe "#to_h" do
+    it "should convert a table into a hash" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expected = {
+        "id" => ["1", "2", "3"],
+        "name" => ["John Doe", "Kelly Strong", "James Hightower"],
+        "age" => ["31", "20", "58"]
+      }
+      actual = table.to_h
+
+      typeof(actual).should eq Hash(String, Array(String))
+      actual.should eq expected
+    end
+  end
+
+  describe "#[]" do
+    it "should return a column" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expected = ["John Doe", "Kelly Strong", "James Hightower"]
+      actual = table["name"]
+
+      typeof(actual).should eq Array(String)
+      actual.should eq expected
+    end
+
+    it "should return row" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expected = ["3", "James Hightower", "58"]
+      actual = table[2]
+
+      typeof(actual).should eq Array(String)
+      actual.should eq expected
+    end
+
+    it "should raise a KeyError if table does not have column name matching the specified key" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expect_raises(KeyError) do
+        table["unknown"]
+      end
+    end
+
+    it "should raise an IndexError if index is invalid" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expect_raises(IndexError) do
+        table[3]
+      end
+    end
+  end
 end

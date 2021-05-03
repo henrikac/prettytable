@@ -88,6 +88,38 @@ class PrettyTable::Table
     return table
   end
 
+  # Returns the table as a hash.
+  def to_h : Hash(String, Array(String))
+    hash = Hash(String, Array(String)).new
+    col_arr = @rows.transpose
+
+    @headers.each do |header|
+      hash[header] = col_arr.shift
+    end
+
+    return hash
+  end
+
+  # Returns the row at index *idx*.
+  def [](idx : Int32) : Array(String)
+    if @rows.empty? || idx < 0 || idx > (@rows.size - 1)
+      raise IndexError.new
+    end
+
+    return @rows[idx]
+  end
+
+  # Returns table column *[key]*.
+  def [](key : String) : Array(String)
+    h = self.to_h
+
+    if !h.has_key?(key)
+      raise KeyError.new("unknown column name: #{key}")
+    end
+
+    return h[key]
+  end
+
   private def table_line(column_sizes : Array(Int32)) : String
     return "" if @headers.empty?
 
