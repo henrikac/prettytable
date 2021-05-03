@@ -120,6 +120,62 @@ class PrettyTable::Table
     return h[key]
   end
 
+  # Returns a new `Table` with the given *columns*.
+  #
+  # Example:
+  # ```
+  # table = PrettyTable::Table.new(["id", "name", "age"])
+  # ```
+  # will create a table with the following columns
+  # ```
+  # +----+------+-----+
+  # | id | name | age |
+  # +----+------+-----+
+  # ```
+  # You can select just the *name* and *age* column like this
+  # ```
+  # table.select(["name", "age"])
+  # ```
+  # this will return a new `Table` with columns
+  # ```
+  # +------+-----+
+  # | name | age |
+  # +------+-----+
+  # ```
+  # However, `table.select(["age", "name"])` will create a table
+  # with columns
+  # ```
+  # +-----+------+
+  # | age | name |
+  # +-----+------+
+  # ```
+  #
+  # NOTE: If no columns are specified (empty array or an array of empty strings)
+  # then `self` is returned.
+  def select(columns : Array(String)) : PrettyTable::Table
+    return self if columns.select { |i| !i.empty? }.empty?
+
+    hashed_table = self.to_h
+
+    columns.each do |column|
+      if !hashed_table.has_key?(column)
+        raise KeyError.new("unknown column name: #{column}")
+      end
+    end
+
+    new_table = PrettyTable::Table.new(columns)
+
+    self.rows.each_with_index do |_, i|
+      row = Array(String).new
+      columns.each do |column|
+        row << hashed_table[column][i]
+      end
+      new_table.add_row(row)
+    end
+
+    return new_table
+  end
+
   private def table_line(column_sizes : Array(Int32)) : String
     return "" if @headers.empty?
 

@@ -51,25 +51,6 @@ will output
 + `PrettyTable::Table#<<(row : Array(String))`
 + `PrettyTable::Table#<<(rows : Array(Array(String)))`
 
-#### To hash
-
-```crystal
-require "prettytable"
-
-table = PrettyTable::Table.new(["id", "name", "age"])
-table << [
-  ["1", "Melody Connolly", "42"],
-  ["2", "Leslie Hutchinson", "1"],
-  ["3", "Codey French", "58"]
-]
-
-table.to_h # => {
-           #      "id" => ["1", "2", "3"],
-           #      "name" => ["Melody Connoly", "Leslie Hutchinson", "Codey French"],
-           #      "age" => ["42", "1", "58"]
-           #    }
-```
-
 #### Get row/column
 
 ```crystal
@@ -87,6 +68,50 @@ table[0] # => ["1", "Melody Connolly", "42"]
 
 # get column
 table["name"] # => ["Melody Connolly", "Leslie Hutchinson", "Codey French"]
+```
+
+#### Select multiple columns
+
+```crystal
+require "prettytable"
+
+table = PrettyTable::Table.new(["id", "name", "age"])
+table << [
+  ["1", "Melody Connolly", "42"],
+  ["2", "Leslie Hutchinson", "1"],
+  ["3", "Codey French", "58"]
+]
+
+puts table.select(["name", "age"])
+```
+will output
+```
++-------------------+-----+
+| name              | age |
++-------------------+-----+
+| Melody Connolly   |  42 |
+| Leslie Hutchinson |   1 |
+| Codey French      |  58 |
++-------------------+-----+
+```
+
+#### To hash
+
+```crystal
+require "prettytable"
+
+table = PrettyTable::Table.new(["id", "name", "age"])
+table << [
+  ["1", "Melody Connolly", "42"],
+  ["2", "Leslie Hutchinson", "1"],
+  ["3", "Codey French", "58"]
+]
+
+table.to_h # => {
+           #      "id" => ["1", "2", "3"],
+           #      "name" => ["Melody Connoly", "Leslie Hutchinson", "Codey French"],
+           #      "age" => ["42", "1", "58"]
+           #    }
 ```
 
 #### To/From CSV

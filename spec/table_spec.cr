@@ -325,4 +325,56 @@ describe Table do
       end
     end
   end
+
+  describe "#select" do
+    it "should return a new table with the given columns" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expected = "
++-----------------+-----+
+| name            | age |
++-----------------+-----+
+| John Doe        |  31 |
+| Kelly Strong    |  20 |
+| James Hightower |  58 |
++-----------------+-----+
+"
+      actual = table.select(["name", "age"])
+
+      actual.headers.should eq ["name", "age"]
+      actual.rows.size.should eq table.rows.size
+      actual.to_s.should eq expected
+    end
+
+    it "should return original table if no columns specified" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      table.select(Array(String).new).should eq table
+      table.select([""]).should eq table
+      table.select(["", "", ""]).should eq table
+    end
+
+    it "should raise a KeyError if a column is requested that does not exist" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expect_raises(KeyError) do
+        table.select(["height"])
+      end
+    end
+  end
 end
