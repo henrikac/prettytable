@@ -135,6 +135,46 @@ describe Table do
     end
   end
 
+  describe "#delete_row" do
+    it "should remove a row from the table" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "George", "72"],
+        ["2", "Wanda", "1"],
+        ["3", "Clark Kent", "31"]
+      ]
+
+      deleted_row = table.delete_row(1)
+
+      expected = [
+        ["1", "George", "72"],
+        ["3", "Clark Kent", "31"]
+      ]
+      actual = table.rows
+
+      actual.size.should eq expected.size
+      actual.each_with_index do |row, i|
+        row.each_with_index do |item, j|
+          item.should eq expected[i][j]
+        end
+      end
+      deleted_row.should eq ["2", "Wanda", "1"]
+    end
+
+    it "should raise an IndexError if invalid index" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "George", "72"],
+        ["2", "Wanda", "1"],
+        ["3", "Clark Kent", "31"]
+      ]
+
+      expect_raises(IndexError) do
+        table.delete_row(3)
+      end
+    end
+  end
+
   describe "#to_s" do
     it "should print table" do
       table = PrettyTable::Table.new(["id", "name", "age"])

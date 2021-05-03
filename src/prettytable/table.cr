@@ -54,6 +54,14 @@ class PrettyTable::Table
     self.add_rows(rows)
   end
 
+  # Removes a row from the table, returning that row.
+  def delete_row(idx : Int32) : Array(String)
+    if @rows.empty? || idx < 0 || idx > @rows.size
+      raise IndexError.new
+    end
+    return @rows.delete_at(idx)
+  end
+
   # Writes the table to *io*.
   def to_s(io : IO) : Nil
     return if @headers.empty?

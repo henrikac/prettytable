@@ -51,6 +51,22 @@ will output
 + `PrettyTable::Table#<<(row : Array(String))`
 + `PrettyTable::Table#<<(rows : Array(Array(String)))`
 
+#### Delete row
+
+```crystal
+require "prettytable"
+
+table = PrettyTable::Table.new(["id", "name", "age"])
+# headers can be set as above or later with #set_headers(headers : Array(String))
+table << [
+  ["1", "Melody Connolly", "42"],
+  ["2", "Leslie Hutchinson", "1"],
+  ["3", "Codey French", "58"]
+]
+
+table.delete_row(1) # => ["2", "Leslie Hutchinson", "1"]
+```
+
 #### Get row/column
 
 ```crystal
