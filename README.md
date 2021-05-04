@@ -152,6 +152,26 @@ will output
 +----+---------------+-----+
 ```
 
+#### Sort a table
+
+```crystal
+require "prettytable"
+
+table = PrettyTable::Table.new(["id", "name", "age"])
+table << [
+  ["1", "John Doe", "31"],
+  ["2", "Kelly Strong", "20"],
+  ["3", "James Hightower", "58"],
+  ["4", "Brian Muscle", "3"],
+  ["5", "Lulu Sparkles", "28"]
+]
+
+sorted_table_asc = table.sort("name")
+sorted_table_desc = table.sort("name", false)
+custom_sort = table.sort { |a, b| a[2] <=> b[2] }
+```
+Sorting a table will always return a new `Table`.
+
 #### To hash
 
 ```crystal

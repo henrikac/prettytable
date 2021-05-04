@@ -160,8 +160,8 @@ class PrettyTable::Table
   # Returns a new `Table` that is a copy of `self`, removing
   # any items that appear in *other*.
   def -(other : PrettyTable::Table) : PrettyTable::Table
-    diff = PrettyTable::Table.new(self.headers)
-    diff << self.rows - other.rows
+    diff = PrettyTable::Table.new(@headers)
+    diff << @rows - other.rows
     return diff
   end
 
@@ -210,7 +210,7 @@ class PrettyTable::Table
 
     new_table = PrettyTable::Table.new(columns)
 
-    self.rows.each_with_index do |_, i|
+    @rows.each_with_index do |_, i|
       row = Array(String).new
       columns.each do |column|
         row << hashed_table[column][i]
@@ -219,6 +219,39 @@ class PrettyTable::Table
     end
 
     return new_table
+  end
+
+  # Sorts a table based on the given *column* and returns a new `Table`.
+  def sort(column : String, asc_order = true) : PrettyTable::Table
+    idx = -1
+    @headers.each_with_index do |header, i|
+      if header == column
+        idx = i
+      end
+    end
+
+    if idx == -1
+      raise KeyError.new("unknown column name: #{column}")
+    end
+
+    sorted_table = PrettyTable::Table.new(@headers)
+
+    if asc_order
+      sorted_rows = @rows.sort { |a, b| a[idx] <=> b[idx] }
+    else
+      sorted_rows = @rows.sort { |a, b| b[idx] <=> a[idx] }
+    end
+
+    sorted_table << sorted_rows
+
+    return sorted_table
+  end
+
+  # Returns a new `Table` with rows sorted based on the comparator in the given block.
+  def sort(&block : Array(String), Array(String) -> Int32) : PrettyTable::Table
+    sorted_table = PrettyTable::Table.new(@headers)
+    sorted_table << @rows.sort! &block
+    return sorted_table
   end
 
   private def table_line(column_sizes : Array(Int32)) : String

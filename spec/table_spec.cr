@@ -366,22 +366,7 @@ describe Table do
     end
   end
 
-  describe "#[]" do
-    it "should return a column" do
-      table = PrettyTable::Table.new(["id", "name", "age"])
-      table << [
-        ["1", "John Doe", "31"],
-        ["2", "Kelly Strong", "20"],
-        ["3", "James Hightower", "58"]
-      ]
-
-      expected = ["John Doe", "Kelly Strong", "James Hightower"]
-      actual = table["name"]
-
-      typeof(actual).should eq Array(String)
-      actual.should eq expected
-    end
-
+  describe "#[](idx)" do
     it "should return row" do
       table = PrettyTable::Table.new(["id", "name", "age"])
       table << [
@@ -397,6 +382,21 @@ describe Table do
       actual.should eq expected
     end
 
+    it "should raise an IndexError if index is invalid" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expect_raises(IndexError) do
+        table[3]
+      end
+    end
+  end
+
+  describe "#[](range)" do
     it "should return rows within specified range" do
       table = PrettyTable::Table.new(["id", "name", "age"])
       table << [
@@ -421,6 +421,23 @@ describe Table do
         end
       end
     end
+  end
+
+  describe "#[](key)" do
+    it "should return a column" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expected = ["John Doe", "Kelly Strong", "James Hightower"]
+      actual = table["name"]
+
+      typeof(actual).should eq Array(String)
+      actual.should eq expected
+    end
 
     it "should raise a KeyError if table does not have column name matching the specified key" do
       table = PrettyTable::Table.new(["id", "name", "age"])
@@ -432,19 +449,6 @@ describe Table do
 
       expect_raises(KeyError) do
         table["unknown"]
-      end
-    end
-
-    it "should raise an IndexError if index is invalid" do
-      table = PrettyTable::Table.new(["id", "name", "age"])
-      table << [
-        ["1", "John Doe", "31"],
-        ["2", "Kelly Strong", "20"],
-        ["3", "James Hightower", "58"]
-      ]
-
-      expect_raises(IndexError) do
-        table[3]
       end
     end
   end
@@ -532,6 +536,109 @@ describe Table do
 
       expect_raises(KeyError) do
         table.select(["height"])
+      end
+    end
+  end
+
+  describe "#sort" do
+    it "should sort a table rows based on specified column (asc order)" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"],
+        ["4", "Brian Muscle", "3"],
+        ["5", "Lulu Sparkles", "28"]
+      ]
+
+      expected = PrettyTable::Table.new(["id", "name", "age"])
+      expected << [
+        ["4", "Brian Muscle", "3"],
+        ["3", "James Hightower", "58"],
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["5", "Lulu Sparkles", "28"]
+      ]
+      actual = table.sort("name")
+
+      actual.rows.size.should eq expected.rows.size
+      actual.rows.each_with_index do |row, i|
+        row.each_with_index do |item, j|
+          item.should eq expected.rows[i][j]
+        end
+      end
+    end
+
+    it "should sort a table rows based on specified column (desc order)" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"],
+        ["4", "Brian Muscle", "3"],
+        ["5", "Lulu Sparkles", "28"]
+      ]
+
+      expected = PrettyTable::Table.new(["id", "name", "age"])
+      expected << [
+        ["5", "Lulu Sparkles", "28"],
+        ["2", "Kelly Strong", "20"],
+        ["1", "John Doe", "31"],
+        ["3", "James Hightower", "58"],
+        ["4", "Brian Muscle", "3"]
+      ]
+      actual = table.sort("name", false)
+
+      actual.rows.size.should eq expected.rows.size
+      actual.rows.each_with_index do |row, i|
+        row.each_with_index do |item, j|
+          item.should eq expected.rows[i][j]
+        end
+      end
+    end
+
+    it "should raise an KeyError if unknown column specified" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"],
+        ["4", "Brian Muscle", "3"],
+        ["5", "Lulu Sparkles", "28"]
+      ]
+
+      expect_raises(KeyError) do
+        table.sort("height")
+      end
+    end
+  end
+
+  describe "#sort(&block)" do
+    it "should sort a table rows based on comparator" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "49"],
+        ["3", "James Hightower", "58"],
+        ["4", "Brian Muscle", "83"],
+        ["5", "Lulu Sparkles", "28"],
+      ]
+
+      expected = PrettyTable::Table.new(["id", "name", "age"])
+      expected << [
+        ["5", "Lulu Sparkles", "28"],
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "49"],
+        ["3", "James Hightower", "58"],
+        ["4", "Brian Muscle", "83"],
+      ]
+      actual = table.sort { |a, b| a[2] <=> b[2] }
+
+      actual.rows.size.should eq expected.rows.size
+      actual.rows.each_with_index do |row, i|
+        row.each_with_index do |item, j|
+          item.should eq expected.rows[i][j]
+        end
       end
     end
   end
