@@ -76,11 +76,19 @@ table = PrettyTable::Table.new(["id", "name", "age"])
 table << [
   ["1", "Melody Connolly", "42"],
   ["2", "Leslie Hutchinson", "1"],
-  ["3", "Codey French", "58"]
+  ["3", "Codey French", "58"],
+  ["4", "Lulu Sparkles", "23"]
 ]
 
 # get row
 table[0] # => ["1", "Melody Connolly", "42"]
+
+# get rows
+table[1..3] # => [
+            #      ["2", "Leslie Hutchinson", "1"],
+            #      ["3", "Codey French", "58"],
+            #      ["4", "Lulu Sparkles", "23"]
+            #    ]
 
 # get column
 table["name"] # => ["Melody Connolly", "Leslie Hutchinson", "Codey French"]
@@ -109,6 +117,39 @@ will output
 | Leslie Hutchinson |   1 |
 | Codey French      |  58 |
 +-------------------+-----+
+```
+
+#### Difference between two tables
+
+```crystal
+require "prettytable"
+
+table = PrettyTable::Table.new(["id", "name", "age"])
+table << [
+  ["1", "John Doe", "31"],
+  ["2", "Kelly Strong", "20"],
+  ["3", "James Hightower", "58"],
+  ["4", "Brian Muscle", "3"],
+  ["5", "Lulu Sparkles", "28"]
+]
+
+other = PrettyTable::Table.new(["id", "name", "age"])
+other << [
+  ["1", "John Doe", "31"],
+  ["2", "Kelly Strong", "20"],
+  ["3", "James Hightower", "58"]
+]
+
+puts table - other
+```
+will output
+```
++----+---------------+-----+
+| id | name          | age |
++----+---------------+-----+
+|  4 | Brian Muscle  |  42 |
+|  5 | Lulu Sparkles |  58 |
++----+---------------+-----+
 ```
 
 #### To hash

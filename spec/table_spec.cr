@@ -397,6 +397,31 @@ describe Table do
       actual.should eq expected
     end
 
+    it "should return rows within specified range" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"],
+        ["4", "Brian Muscle", "3"],
+        ["5", "Lulu Sparkles", "28"]
+      ]
+
+      expected = [
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"],
+        ["4", "Brian Muscle", "3"],
+      ]
+      actual = table[1..3]
+
+      actual.size.should eq expected.size
+      actual.each_with_index do |row, i|
+        row.each_with_index do |item, j|
+          item.should eq expected[i][j]
+        end
+      end
+    end
+
     it "should raise a KeyError if table does not have column name matching the specified key" do
       table = PrettyTable::Table.new(["id", "name", "age"])
       table << [
@@ -420,6 +445,41 @@ describe Table do
 
       expect_raises(IndexError) do
         table[3]
+      end
+    end
+  end
+
+  describe "#-" do
+    it "should return the difference between two tables" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"],
+        ["4", "Brian Muscle", "3"],
+        ["5", "Lulu Sparkles", "28"]
+      ]
+
+      other = PrettyTable::Table.new(["id", "name", "age"])
+      other << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expected = PrettyTable::Table.new(["id", "name", "age"])
+      expected << [
+        ["4", "Brian Muscle", "3"],
+        ["5", "Lulu Sparkles", "28"]
+      ]
+      actual = table - other
+
+      actual.headers.should eq expected.headers
+      actual.rows.size.should eq expected.rows.size
+      actual.rows.each_with_index do |row, i|
+        row.each_with_index do |item, j|
+          item.should eq expected.rows[i][j]
+        end
       end
     end
   end

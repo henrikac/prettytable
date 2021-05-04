@@ -138,6 +138,14 @@ class PrettyTable::Table
     return @rows[idx]
   end
 
+  # Returns all rows within the given range.
+  #
+  # NOTE: See https://crystal-lang.org/api/1.0.0/Array.html#[](range:Range)-instance-method
+  # for more information.
+  def [](range : Range) : Array(Array(String))
+    return @rows[range]
+  end
+
   # Returns table column *[key]*.
   def [](key : String) : Array(String)
     h = self.to_h
@@ -147,6 +155,14 @@ class PrettyTable::Table
     end
 
     return h[key]
+  end
+
+  # Returns a new `Table` that is a copy of `self`, removing
+  # any items that appear in *other*.
+  def -(other : PrettyTable::Table) : PrettyTable::Table
+    diff = PrettyTable::Table.new(self.headers)
+    diff << self.rows - other.rows
+    return diff
   end
 
   # Returns a new `Table` with the given *columns*.
