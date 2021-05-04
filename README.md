@@ -130,6 +130,19 @@ table.to_h # => {
            #    }
 ```
 
+#### To JSON
+
+```crystal
+require "prettytable"
+
+table = PrettyTable::Table.new(["id", "name", "age"])
+table << [
+  ["1", "Melody Connolly", "42"],
+]
+
+table.to_json # => [{"id":"1","name":"Melody Connolly","age":"42"}]
+```
+
 #### To/From CSV
 
 ```crystal

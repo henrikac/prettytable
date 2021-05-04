@@ -1,4 +1,5 @@
 require "csv"
+require "json"
 
 class PrettyTable::Table
   # Returns the table headers.
@@ -30,7 +31,11 @@ class PrettyTable::Table
   # An `ArgumentError` is raised if the *row* does not
   # have the same size as the *headers*.
   def add_row(row : Array(String))
-    if row.size != headers.size
+    if @headers.empty?
+      raise ArgumentError.new("please add headers before trying to add rows")
+    end
+
+    if row.size != @headers.size
       raise ArgumentError.new("expected a row of size #{headers.size}")
     end
 
@@ -60,6 +65,16 @@ class PrettyTable::Table
       raise IndexError.new
     end
     return @rows.delete_at(idx)
+  end
+
+  # Removes all rows from `self`.
+  def clear
+    @rows.clear
+  end
+
+  # Returns `true` if `self` is empty, `false` otherwise.
+  def empty? : Bool
+    return @rows.empty?
   end
 
   # Writes the table to *io*.
@@ -98,14 +113,20 @@ class PrettyTable::Table
 
   # Returns the table as a hash.
   def to_h : Hash(String, Array(String))
-    hash = Hash(String, Array(String)).new
-    col_arr = @rows.transpose
+    return Hash.zip(@headers, @rows.transpose)
+  end
 
-    @headers.each do |header|
-      hash[header] = col_arr.shift
+  # Serializes the table into JSON.
+  def to_json : String
+    if @rows.empty?
+      return @rows.to_json
     end
 
-    return hash
+    arr = Array(Hash(String, String)).new(@rows.size)
+
+    @rows.each { |r| arr << Hash.zip(@headers, r) }
+
+    return arr.to_json
   end
 
   # Returns the row at index *idx*.

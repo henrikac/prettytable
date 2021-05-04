@@ -175,6 +175,40 @@ describe Table do
     end
   end
 
+  describe "#clear" do
+    it "should remove all rows from table" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "George", "72"],
+        ["2", "Wanda", "1"],
+        ["3", "Clark Kent", "31"]
+      ]
+
+      table.clear
+
+      table.rows.size.should eq 0
+    end
+  end
+
+  describe "#empty?" do
+    it "should return true if table has no rows" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+
+      table.empty?.should be_true
+    end
+
+    it "should return false if there are rows in table" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "George", "72"],
+        ["2", "Wanda", "1"],
+        ["3", "Clark Kent", "31"]
+      ]
+
+      table.empty?.should be_false
+    end
+  end
+
   describe "#to_s" do
     it "should print table" do
       table = PrettyTable::Table.new(["id", "name", "age"])
@@ -304,6 +338,30 @@ describe Table do
       actual = table.to_h
 
       typeof(actual).should eq Hash(String, Array(String))
+      actual.should eq expected
+    end
+  end
+
+  describe "#to_json" do
+    it "should return an empty json array if no rows in table" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+
+      table.to_json.should eq "[]"
+    end
+
+    it "should return table as json" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expected = "[{\"id\":\"1\",\"name\":\"John Doe\",\"age\":\"31\"},"
+      expected += "{\"id\":\"2\",\"name\":\"Kelly Strong\",\"age\":\"20\"},"
+      expected += "{\"id\":\"3\",\"name\":\"James Hightower\",\"age\":\"58\"}]"
+      actual = table.to_json
+
       actual.should eq expected
     end
   end
