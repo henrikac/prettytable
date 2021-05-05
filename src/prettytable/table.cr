@@ -263,6 +263,42 @@ class PrettyTable::Table
     return sorted_table
   end
 
+  # Appends a new column to `self`.
+  def add_column(column_name : String, column_data : Array(String))
+    if column_name.empty?
+      raise ArgumentError.new("column name is undefined")
+    end
+
+    if !@headers.select { |h| h == column_name }.empty?
+      raise ArgumentError.new("table already has a #{column_name} column")
+    end
+
+    if column_data.size != @rows.size
+      raise ArgumentError.new("expected a column of size #{@rows.size}")
+    end
+
+    @headers << column_name
+    @rows.each_with_index { |r, i| r << column_data[i] }
+  end
+
+  # Removes a column from `self` and returns the data from the removed column.
+  def remove_column(column_name : String) : Array(String)
+    if column_name.empty?
+      raise ArgumentError.new("column name is undefined")
+    end
+
+    tmp = self.to_h
+    removed_data = tmp[column_name]
+
+    @headers = @headers - [column_name]
+
+    removed_data.each_with_index do |item, i|
+      @rows[i] = @rows[i] - [item]
+    end
+
+    return removed_data
+  end
+
   private def table_line(column_sizes : Array(Int32)) : String
     return "" if @headers.empty?
 

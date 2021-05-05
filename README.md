@@ -94,6 +94,23 @@ table[1..3] # => [
 table["name"] # => ["Melody Connolly", "Leslie Hutchinson", "Codey French"]
 ```
 
+#### Add/remove a column
+
+```crystal
+require "prettytable"
+
+table = PrettyTable::Table.new(["id", "name", "age"])
+table << [
+  ["1", "Melody Connolly", "42"],
+  ["2", "Leslie Hutchinson", "1"],
+  ["3", "Codey French", "58"],
+]
+
+table.add_column("height", ["158", "163", "189"])
+
+table.remove_column("id") # => ["1", "2", "3"]
+```
+
 #### Select multiple columns
 
 ```crystal
@@ -170,7 +187,7 @@ sorted_table_asc = table.sort("name")
 sorted_table_desc = table.sort("name", false)
 custom_sort = table.sort { |a, b| a[2] <=> b[2] }
 ```
-Sorting a table will always return a new `Table`.
+Sorting a table will always return a new table.
 
 #### To hash
 

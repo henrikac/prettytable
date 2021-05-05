@@ -58,11 +58,7 @@ describe Table do
       actual = table.rows
 
       actual.size.should eq expected.size
-      actual.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected[i][j]
-        end
-      end
+      check_rows(actual, expected).should be_true
     end
 
     it "should raise an ArgumentError row is not the same size as the headers" do
@@ -85,11 +81,7 @@ describe Table do
       actual = table.rows
 
       actual.size.should eq expected.size
-      actual.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected[i][j]
-        end
-      end
+      check_rows(actual, expected).should be_true
     end
 
     it "should add rows to the table" do
@@ -101,11 +93,7 @@ describe Table do
       actual = table.rows
 
       actual.size.should eq expected.size
-      actual.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected[i][j]
-        end
-      end
+      check_rows(actual, expected).should be_true
     end
 
     it "should raise an ArgumentError row is not the same size as the headers" do
@@ -127,11 +115,7 @@ describe Table do
       actual = table.rows
 
       actual.size.should eq expected.size
-      actual.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected[i][j]
-        end
-      end
+      check_rows(actual, expected).should be_true
     end
   end
 
@@ -153,11 +137,7 @@ describe Table do
       actual = table.rows
 
       actual.size.should eq expected.size
-      actual.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected[i][j]
-        end
-      end
+      check_rows(actual, expected).should be_true
       deleted_row.should eq ["2", "Wanda", "1"]
     end
 
@@ -258,11 +238,7 @@ describe Table do
       end
 
       table_from_csv.rows.size.should eq table.rows.size
-      table_from_csv.rows.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq table.rows[i][j]
-        end
-      end
+      check_rows(table_from_csv.rows, table.rows).should be_true
     end
   end
 
@@ -296,11 +272,7 @@ describe Table do
       actual_rows = table.rows
 
       actual_rows.size.should eq expected_rows.size
-      actual_rows.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected_rows[i][j]
-        end
-      end
+      check_rows(actual_rows, expected_rows).should be_true
     end
 
     it "should output table created from csv correctly" do
@@ -415,11 +387,7 @@ describe Table do
       actual = table[1..3]
 
       actual.size.should eq expected.size
-      actual.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected[i][j]
-        end
-      end
+      check_rows(actual, expected).should be_true
     end
   end
 
@@ -472,11 +440,7 @@ describe Table do
       actual = table.rows
 
       actual.size.should eq expected.size
-      actual.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected[i][j]
-        end
-      end
+      check_rows(actual, expected).should be_true
     end
 
     it "should raise an IndexError if index is invalid" do
@@ -532,12 +496,7 @@ describe Table do
       actual = table - other
 
       actual.headers.should eq expected.headers
-      actual.rows.size.should eq expected.rows.size
-      actual.rows.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected.rows[i][j]
-        end
-      end
+      check_rows(actual.rows, expected.rows).should be_true
     end
   end
 
@@ -615,11 +574,7 @@ describe Table do
       actual = table.sort("name")
 
       actual.rows.size.should eq expected.rows.size
-      actual.rows.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected.rows[i][j]
-        end
-      end
+      check_rows(actual.rows, expected.rows).should be_true
     end
 
     it "should sort a table rows based on specified column (desc order)" do
@@ -643,11 +598,7 @@ describe Table do
       actual = table.sort("name", false)
 
       actual.rows.size.should eq expected.rows.size
-      actual.rows.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected.rows[i][j]
-        end
-      end
+      check_rows(actual.rows, expected.rows).should be_true
     end
 
     it "should raise an KeyError if unknown column specified" do
@@ -688,11 +639,134 @@ describe Table do
       actual = table.sort { |a, b| a[2] <=> b[2] }
 
       actual.rows.size.should eq expected.rows.size
-      actual.rows.each_with_index do |row, i|
-        row.each_with_index do |item, j|
-          item.should eq expected.rows[i][j]
-        end
+      check_rows(actual.rows, expected.rows).should be_true
+    end
+  end
+
+  describe "#add_column" do
+    it "should add a column to the table" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      column_data = ["183", "167", "192"]
+
+      table.add_column("height", column_data)
+
+      expected = PrettyTable::Table.new(["id", "name", "age", "height"])
+      expected << [
+        ["1", "John Doe", "31", "183"],
+        ["2", "Kelly Strong", "20", "167"],
+        ["3", "James Hightower", "58", "192"]
+      ]
+      actual = table
+
+      actual.headers.size.should eq expected.headers.size
+      check_rows(actual.rows, expected.rows).should be_true
+    end
+
+    it "should raise an ArgumentError if column_name is an empty string" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      column_data = ["183", "167", "192"]
+
+      expect_raises(ArgumentError) do
+        table.add_column("", column_data)
       end
+    end
+
+    it "should raise an ArgumentError if table already have a column == column_name" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      column_data = ["183", "167", "192"]
+
+      expect_raises(ArgumentError) do
+        table.add_column("age", column_data)
+      end
+    end
+
+    it "should raise an ArgumentError if column_data.size != table.rows.size" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      column_data = ["183", "167"]
+
+      expect_raises(ArgumentError) do
+        table.add_column("height", column_data)
+      end
+    end
+  end
+
+  describe "#remove_column" do
+    it "should remove a column from table and return removed column data" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      removed_data = table.remove_column("name")
+
+      expected = PrettyTable::Table.new(["id", "age"])
+      expected << [
+        ["1", "31"],
+        ["2", "20"],
+        ["3", "58"]
+      ]
+      actual = table
+
+      actual.headers.size.should eq expected.headers.size
+      check_rows(actual.rows, expected.rows)
+
+      removed_data.should eq ["John Doe", "Kelly Strong", "James Hightower"]
+    end
+
+    it "should raise an ArgumentError if column name is an empty string" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+
+      expect_raises(ArgumentError) do
+        table.remove_column("")
+      end
+
+      table.headers.size.should eq 3
+    end
+
+    it "should raise a KeyError if unknown column name" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"]
+      ]
+      
+      expect_raises(KeyError) do
+        table.remove_column("height")
+      end
+
+      table.headers.size.should eq 3
     end
   end
 end
