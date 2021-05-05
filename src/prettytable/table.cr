@@ -157,6 +157,15 @@ class PrettyTable::Table
     return h[key]
   end
 
+  # Updates the row at the given index.
+  def []=(idx : Int32, value : Array(String))
+    if value.size != @headers.size
+      raise ArgumentError.new("expected a row of size #{@headers.size}")
+    end
+
+    @rows[idx] = value
+  end
+
   # Returns a new `Table` that is a copy of `self`, removing
   # any items that appear in *other*.
   def -(other : PrettyTable::Table) : PrettyTable::Table

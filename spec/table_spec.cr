@@ -453,6 +453,59 @@ describe Table do
     end
   end
 
+  describe "#[]=" do
+    it "should update the content of the specified row" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"],
+      ]
+
+      table[2] = ["3", "Lulu Sparkles", "28"]
+
+      expected = [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "Lulu Sparkles", "28"]
+      ]
+      actual = table.rows
+
+      actual.size.should eq expected.size
+      actual.each_with_index do |row, i|
+        row.each_with_index do |item, j|
+          item.should eq expected[i][j]
+        end
+      end
+    end
+
+    it "should raise an IndexError if index is invalid" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"],
+      ]
+
+      expect_raises(IndexError) do
+        table[3] = ["3", "Lulu Sparkles", "28"]
+      end
+    end
+
+    it "should raise an ArgumentError if row has different size" do
+      table = PrettyTable::Table.new(["id", "name", "age"])
+      table << [
+        ["1", "John Doe", "31"],
+        ["2", "Kelly Strong", "20"],
+        ["3", "James Hightower", "58"],
+      ]
+
+      expect_raises(ArgumentError) do
+        table[2] = ["3", "Lulu Sparkles"]
+      end
+    end
+  end
+
   describe "#-" do
     it "should return the difference between two tables" do
       table = PrettyTable::Table.new(["id", "name", "age"])
