@@ -21,8 +21,13 @@ Crystal library that makes it easy to build simple text tables.
 ```crystal
 require "prettytable"
 
+# default initialize
+# table = PrettyTable::Table.new
+# table.set_headers(["id", "name", "age"])
+
+# initialize + set_headers
 table = PrettyTable::Table.new(["id", "name", "age"])
-# headers can be set as above or later with #set_headers(headers : Array(String))
+
 table << [
   ["1", "Melody Connolly", "42"],
   ["2", "Leslie Hutchinson", "1"],
@@ -43,13 +48,16 @@ will output
 +----+-------------------+-----+
 
 ```
+*Notes:*
++ Once headers has been set they cannot be re-set / updated.
++ Rows cannot be added to the table before the headers has been set.
 
 #### Ways to add rows to table
 
-+ `PrettyTable::Table#add_row(row : Array(String))`
-+ `PrettyTable::Table#add_rows(rows : Array(Array(String)))`
-+ `PrettyTable::Table#<<(row : Array(String))`
-+ `PrettyTable::Table#<<(rows : Array(Array(String)))`
++ `#add_row(row : Array(String))`
++ `#add_rows(rows : Array(Array(String)))`
++ `#<<(row : Array(String))`
++ `#<<(rows : Array(Array(String)))`
 
 #### Delete row
 

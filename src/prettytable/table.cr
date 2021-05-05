@@ -36,7 +36,7 @@ class PrettyTable::Table
     end
 
     if row.size != @headers.size
-      raise ArgumentError.new("expected a row of size #{headers.size}")
+      raise ArgumentError.new("expected a row of size #{@headers.size}")
     end
 
     @rows << row
@@ -61,9 +61,6 @@ class PrettyTable::Table
 
   # Removes a row from the table, returning that row.
   def delete_row(idx : Int32) : Array(String)
-    if @rows.empty? || idx < 0 || idx > @rows.size
-      raise IndexError.new
-    end
     return @rows.delete_at(idx)
   end
 
@@ -131,10 +128,6 @@ class PrettyTable::Table
 
   # Returns the row at index *idx*.
   def [](idx : Int32) : Array(String)
-    if @rows.empty? || idx < 0 || idx > (@rows.size - 1)
-      raise IndexError.new
-    end
-
     return @rows[idx]
   end
 
