@@ -87,8 +87,8 @@ class PrettyTable::Table
   end
 
   # Saves the table to a .csv file.
-  def to_csv(filename : String)
-    data = CSV.build do |csv|
+  def to_csv(filename : String, sep : Char = ',')
+    data = CSV.build(separator: sep) do |csv|
       csv.row @headers
       @rows.each { |row| csv.row row }
     end
@@ -97,9 +97,9 @@ class PrettyTable::Table
   end
 
   # Returns a table created based on data from a .csv file.
-  def self.from_csv(csv_file : String) : PrettyTable::Table
+  def self.from_csv(csv_file : String, sep : Char = ',') : PrettyTable::Table
     file_data = File.read csv_file
-    csv = CSV.new(file_data, headers: true)
+    csv = CSV.new(file_data, headers: true, separator: sep)
 
     table = PrettyTable::Table.new(csv.headers)
 
